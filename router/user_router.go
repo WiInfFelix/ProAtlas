@@ -9,6 +9,7 @@ import (
 
 func InitUserRouter(router *gin.Engine) {
 
+	//TODO Order routes to not overwrite each other
 	log.Println("Initializing user routes...")
 
 	router.POST("/register", services.CreateUser)
@@ -17,15 +18,13 @@ func InitUserRouter(router *gin.Engine) {
 		context.String(http.StatusOK, "LoginRoute")
 	})
 
-	router.GET("/user/{user_id}", func(context *gin.Context) {
-		context.String(http.StatusOK, "Get User by ID")
-	})
+	router.GET("/user/:user_id", services.GetUserByID)
 
-	router.PUT("/user/{user_id}", func(context *gin.Context) {
+	router.PUT("/user/:user_id", func(context *gin.Context) {
 		context.String(http.StatusOK, "Update user")
 	})
 
-	router.DELETE("/user/{user_id}", func(context *gin.Context) {
+	router.DELETE("/user/:user_id", func(context *gin.Context) {
 		context.String(http.StatusOK, "Delete User")
 	})
 

@@ -1,19 +1,23 @@
 package services
 
 import (
+	"ProAtlasV6/database"
 	"ProAtlasV6/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
-
-var testUsers = []models.User{
-	{Id: 1, Username: "Lecker"},
-	{Id: 2, Username: "Maes"},
-}
 
 func GetAllUsers(context *gin.Context) {
 
-	context.JSON(http.StatusOK, testUsers)
+	users, err := database.GetAllUsers()
+
+	if err != nil {
+		context.JSON(500, err)
+		return
+	}
+
+	context.JSON(http.StatusOK, users)
 
 }
 
@@ -22,8 +26,29 @@ func CreateUser(context *gin.Context) {
 
 	if err := context.BindJSON(&NewUser); err != nil {
 		context.JSON(http.StatusBadRequest, "Provided invalid JSON")
+		return
 	}
 
-	testUsers = append(testUsers, NewUser)
+	err := database.InsertUserIntoDB(NewUser)
+
+	if err != nil {
+		context.JSON(500, err)
+		return
+	}
+
+}
+
+func GetUserByID(context *gin.Context) {
+	var DummyUser models.User
+	userID, _ := strconv.Atoi(context.Param("userID"))
+
+	DummyUser, err := database.GetUserByID(userID)
+
+	if err != nil {
+		context.JSON(500, err)
+		return
+	}
+
+	context.JSON(200, DummyUser)
 
 }
