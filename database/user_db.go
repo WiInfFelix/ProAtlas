@@ -2,9 +2,8 @@ package database
 
 import (
 	"ProAtlasV6/models"
-	"errors"
 	"fmt"
-	"github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3"
 	"log"
 )
 
@@ -20,11 +19,6 @@ func InsertUserIntoDB(user models.User) (err error) {
 
 	if err != nil {
 
-		if sqlLiteErr, ok := err.(sqlite3.Error); ok {
-			if sqlLiteErr.Code == sqlite3.ErrConstraint {
-				err = errors.New("there was an error concerning unique constraints")
-			}
-		}
 		log.Printf("Error inserting into DB... \n %s \n", err)
 		return err
 	}
@@ -58,14 +52,27 @@ func GetAllUsers() (err error, users []models.User) {
 
 func GetUserByID(userID int) (user models.User, err error) {
 
-	query := "SELECT users.ID, users.Username, users.Email FROM users WHERE id=$1"
+	query, err := GetDB().Prepare("SELECT users.ID, users.Username, users.Email FROM users WHERE id=?")
+	log.Printf("Querying user for id %d", userID)
 
-	row := GetDB().QueryRow(query, userID)
-
-	err = row.Scan(&user.Id, &user.Username, &user.Email)
+	err = query.QueryRow(userID).Scan(&user.Id, &user.Username, &user.Email)
 	if err != nil {
-		fmt.Println("No rows found for ID")
+		fmt.Printf("No rows found for ID: %s \n")
 		return
+	}
+
+	return
+}
+
+func DeleteUser(userID int) (err error) {
+	query, err := GetDB().Prepare("DELETE FROM users WHERE Id =?")
+	if err != nil {
+		return err
+	}
+
+	_, err = query.Exec(userID)
+	if err != nil {
+		return err
 	}
 
 	return

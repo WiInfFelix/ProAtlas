@@ -18,8 +18,13 @@ func main() {
 		log.Panicf("There was an error initializing the database:\n %s", err)
 	}
 
+	defer database.GetDB().Close()
+
 	router.InitHelperRoutes(r)
 	router.InitUserRouter(r)
 
-	r.Run()
+	gin.SetMode(gin.ReleaseMode)
+
+	r.Run(":8080")
+
 }
