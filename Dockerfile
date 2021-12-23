@@ -1,17 +1,11 @@
-FROM golang:alpine AS builder
+FROM python:3.8
 
-RUN apk update && apk add --no-cache git
+WORKDIR /code
 
-WORKDIR /app/
-COPY . .
-EXPOSE 8080
+COPY ./requirements.txt /code/requirements.txt
 
-RUN apk add --no-cache gcc g++
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-RUN go get -d -v
+COPY ./app /code/app
 
-RUN go build -o /app/bin
-
-EXPOSE "8080"
-
-ENTRYPOINT ["/app/bin"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
