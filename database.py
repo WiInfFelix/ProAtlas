@@ -1,16 +1,13 @@
-from logging import log
-from models import User, Exercise, Workouts
-import peewee as p
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
+SQLALCHEMY_DATABASE_URL = "sqlite:///./database.db"
 
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
 
-def setup_db():
-    try:
-        db = p.SqliteDatabase("database.db", pragmas={"foreign_keys": 1})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-        db.connect()
-        db.create_tables([User, Exercise, Workouts])
-    except Exception as e:
-        print(f"There was an error instancing the models: {e}")
-        db.close()
-        raise SystemExit
+Base = declarative_base()

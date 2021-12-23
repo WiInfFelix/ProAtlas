@@ -1,33 +1,38 @@
-import peewee as p
+from sqlalchemy import Column, ForeignKey, Integer, String, Float
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql.elements import ColumnElement
 
-db = p.SqliteDatabase("database.db")
-
-class User(p.Model):
-    id = p.BigIntegerField(primary_key=True)
-    username = p.CharField(max_length=128)
-    email = p.CharField(max_length=256)
-    password = p.CharField()
-
-    class Meta:
-        database = db
+from database import Base
 
 
-class Exercise(p.Model):
-    id = p.BigIntegerField(primary_key=True)
-    exercise_name = p.CharField(max_length=256)
-    description = p.TextField()
-    target_muscle = p.CharField()
+class User(Base):
+    __tablename__ = "users"
 
-    class Meta:
-        database = db
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True)
+    email = Column(String, unique=True)
+    password = Column(String)
 
-class Workouts(p.Model):
-    id = p.BigIntegerField(primary_key=True)
-    user_id = p.ForeignKeyField(User, backref="workouts")
-    exercise_id = p.ForeignKeyField(Exercise, backref="workouts")
-    sets = p.SmallIntegerField()
-    repetitions = p.SmallIntegerField()
-    weight = p.FloatField()
+    workouts = relationship("Workouts", back_populates="user")
 
-    class Meta:
-        database = db
+
+class Exercise(Base):
+    __tablename__ = "exercises"
+
+    id = Column(Integer, primary_key=True, index=True)
+    exercise_name = Column(String, unique=True)
+    description = Column(String)
+    target_muscle = Column(String)
+
+
+class Workouts(Base):
+    __tablename__ = "workouts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    exercise_id = Column(Integer, ForeignKey("exercises.id"))
+    sets = Column(Integer)
+    repetitions = Column(Integer)
+    weight = Column(Float)
+
+    user = relationship("User", back_populates="workouts")
