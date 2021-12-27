@@ -1,6 +1,6 @@
 from database import engine
 from fastapi import FastAPI
-from routes import user_router, exercise_router
+from routes import user_router, exercise_router, workout_router
 import models
 
 models.Base.metadata.create_all(bind=engine)
@@ -10,6 +10,7 @@ app = FastAPI()
 
 app.include_router(user_router)
 app.include_router(exercise_router)
+app.include_router(workout_router)
 
 
 @app.get("/")

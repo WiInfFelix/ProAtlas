@@ -15,3 +15,11 @@ class UserIn(UserBase):
 
 class UserOut(UserBase):
     id: int
+
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+    class Config:
+        orm_mode = True

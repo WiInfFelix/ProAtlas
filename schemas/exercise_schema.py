@@ -2,9 +2,12 @@ from pydantic import BaseModel
 
 
 class ExerciseBase(BaseModel):
-    name: str
+    exercise_name: str
     description: str
     target_muscle: str
+
+    class Config:
+        orm_mode = True
 
 
 class ExerciseOut(ExerciseBase):
