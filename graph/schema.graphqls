@@ -1,0 +1,43 @@
+type Exercise {
+  id: ID!
+  name: String!
+  description: String!
+  target_muscle: String!
+  Creator: User!
+}
+
+type User {
+  id: ID!
+  name: String!
+}
+
+type Query {
+  exercises: [Exercise!]!
+}
+
+input NewUser {
+  username: String!
+  password: String!
+}
+
+input NewExercise {
+  name: String!
+  description: String!
+  target_muscle: String!
+}
+
+input Login {
+  username: String!
+  password: String!
+}
+
+input RefreshTokenInput {
+  token: String!
+}
+
+type Mutation {
+  createExercise(input: NewExercise!): Exercise!
+  createUser(input: NewUser!): String!
+  login(input: Login!): String!
+  refreshToken(input: RefreshTokenInput!): String!
+}
